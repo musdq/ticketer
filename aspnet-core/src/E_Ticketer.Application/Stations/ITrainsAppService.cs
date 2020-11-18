@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Abp.Application.Services;
 using Abp.Application.Services.Dto;
 using E_Ticketer.DataExporting;
@@ -10,13 +11,13 @@ namespace E_Ticketer.Stations
     {
         Task<PagedResultDto<GetTrainForViewDto>> GetAll(GetAllTrainsInput input);
 
-        Task<GetTrainForViewDto> GetTrainForView(int id);
+        Task<GetTrainForViewDto> GetTrainForView(Guid id);
 
-		Task<GetTrainForEditOutput> GetTrainForEdit(EntityDto input);
+		Task<GetTrainForEditOutput> GetTrainForEdit(EntityDto<Guid> input);
 
 		Task CreateOrEdit(CreateOrEditTrainDto input);
 
-		Task Delete(EntityDto input);
+		Task Delete(EntityDto<Guid> input);
 
 		Task<FileDto> GetTrainsToExcel(GetAllTrainsForExcelInput input);
 

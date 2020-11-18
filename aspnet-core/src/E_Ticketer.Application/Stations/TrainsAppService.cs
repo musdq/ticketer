@@ -1,4 +1,5 @@
-﻿using System.Linq.Dynamic.Core;
+﻿using System;
+using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
 using System.Linq;
 using Abp.Application.Services.Dto;
@@ -14,11 +15,11 @@ namespace E_Ticketer.Stations
 
     public class TrainsAppService : E_TicketerAppServiceBase, ITrainsAppService
     {
-		 private readonly IRepository<Train> _trainRepository;
+		 private readonly IRepository<Train,Guid> _trainRepository;
 		 private readonly ITrainsExcelExporter _trainsExcelExporter;
 		 
 
-		  public TrainsAppService(IRepository<Train> trainRepository, ITrainsExcelExporter trainsExcelExporter ) 
+		  public TrainsAppService(IRepository<Train,Guid> trainRepository, ITrainsExcelExporter trainsExcelExporter ) 
 		  {
 			_trainRepository = trainRepository;
 			_trainsExcelExporter = trainsExcelExporter;
@@ -56,7 +57,7 @@ namespace E_Ticketer.Stations
             );
          }
 		 
-		 public async Task<GetTrainForViewDto> GetTrainForView(int id)
+		 public async Task<GetTrainForViewDto> GetTrainForView(Guid id)
          {
             var train = await _trainRepository.GetAsync(id);
 
@@ -66,7 +67,7 @@ namespace E_Ticketer.Stations
          }
 		 
 
-		 public async Task<GetTrainForEditOutput> GetTrainForEdit(EntityDto input)
+		 public async Task<GetTrainForEditOutput> GetTrainForEdit(EntityDto<Guid> input)
          {
             var train = await _trainRepository.FirstOrDefaultAsync(input.Id);
            
@@ -103,12 +104,12 @@ namespace E_Ticketer.Stations
 
 		 protected virtual async Task Update(CreateOrEditTrainDto input)
          {
-            var train = await _trainRepository.FirstOrDefaultAsync((int)input.Id);
+            var train = await _trainRepository.FirstOrDefaultAsync((Guid)input.Id);
              ObjectMapper.Map(input, train);
          }
 
 
-         public async Task Delete(EntityDto input)
+         public async Task Delete(EntityDto<Guid> input)
          {
             await _trainRepository.DeleteAsync(input.Id);
          } 
