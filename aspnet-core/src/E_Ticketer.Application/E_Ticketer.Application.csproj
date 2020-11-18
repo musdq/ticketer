@@ -11,6 +11,9 @@
     <RootNamespace>E_Ticketer</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="EPPlus" Version="5.4.1" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\E_Ticketer.Core\E_Ticketer.Core.csproj" />
   </ItemGroup>
 </Project>

@@ -2,7 +2,7 @@
 
 namespace E_Ticketer.Migrations
 {
-    public partial class initmodels : Migration
+    public partial class initialmodelsagain : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

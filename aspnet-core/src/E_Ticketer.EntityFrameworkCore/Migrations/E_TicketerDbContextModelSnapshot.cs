@@ -1786,15 +1786,12 @@ namespace E_Ticketer.Migrations
                     b.Property<int>("TenantId")
                         .HasColumnType("int");
 
-                    b.Property<int>("TrainId")
-                        .HasColumnType("int");
-
-                    b.Property<Guid?>("TrainId1")
+                    b.Property<Guid>("TrainId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("TrainId1");
+                    b.HasIndex("TrainId");
 
                     b.ToTable("AppTrips");
                 });
@@ -2069,7 +2066,9 @@ namespace E_Ticketer.Migrations
                 {
                     b.HasOne("E_Ticketer.Stations.Train", "Train")
                         .WithMany()
-                        .HasForeignKey("TrainId1");
+                        .HasForeignKey("TrainId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Abp.Application.Features.EditionFeatureSetting", b =>

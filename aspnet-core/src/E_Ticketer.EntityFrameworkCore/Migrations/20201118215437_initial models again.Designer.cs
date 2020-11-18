@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace E_Ticketer.Migrations
 {
     [DbContext(typeof(E_TicketerDbContext))]
-    [Migration("20201113115648_added new models")]
-    partial class addednewmodels
+    [Migration("20201118215437_initial models again")]
+    partial class initialmodelsagain
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -1788,15 +1788,12 @@ namespace E_Ticketer.Migrations
                     b.Property<int>("TenantId")
                         .HasColumnType("int");
 
-                    b.Property<int>("TrainId")
-                        .HasColumnType("int");
-
-                    b.Property<Guid?>("TrainId1")
+                    b.Property<Guid>("TrainId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("TrainId1");
+                    b.HasIndex("TrainId");
 
                     b.ToTable("AppTrips");
                 });
@@ -2071,7 +2068,9 @@ namespace E_Ticketer.Migrations
                 {
                     b.HasOne("E_Ticketer.Stations.Train", "Train")
                         .WithMany()
-                        .HasForeignKey("TrainId1");
+                        .HasForeignKey("TrainId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Abp.Application.Features.EditionFeatureSetting", b =>
