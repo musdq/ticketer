@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using OfficeOpenXml;
 using System.IO;
+using OfficeOpenXml;
 
-namespace Itakiet.DataExporting.Excel.EpPlus
+namespace E_Ticketer.DataExporting.Excel.EpPlus
 {
     public abstract class EpPlusExcelImporterBase<TEntity>
     {

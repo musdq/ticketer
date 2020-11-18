@@ -1,9 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using Abp.Application.Services.Dto;
 
 namespace E_Ticketer.Bookings.Dtos
 {
-    public class CreateOrEditBookingDto : EntityDto<int?>
+    public class CreateOrEditBookingDto : EntityDto<Guid?>
     {
 
 		public int BookingType { get; set; }

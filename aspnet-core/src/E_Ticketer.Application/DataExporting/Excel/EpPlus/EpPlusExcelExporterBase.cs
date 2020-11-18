@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using Abp.AspNetZeroCore.Net;
 using Abp.Collections.Extensions;
 using Abp.Dependency;
-using E_Ticketer.DataExporting;
-using Itakiet.Storage;
+using E_Ticketer.Net.MimeTypes;
+using E_Ticketer.Storage;
 using OfficeOpenXml;
 
-namespace Itakiet.DataExporting.Excel.EpPlus
+namespace E_Ticketer.DataExporting.Excel.EpPlus
 {
-    public abstract class EpPlusExcelExporterBase : ItakietServiceBase, ITransientDependency
+    public abstract class EpPlusExcelExporterBase : E_TicketerAppServiceBase, ITransientDependency
     {
         private readonly ITempFileCacheManager _tempFileCacheManager;
 

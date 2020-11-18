@@ -5,13 +5,13 @@ using Abp.Application.Services.Dto;
 using Abp.Authorization;
 using Abp.Domain.Repositories;
 using Abp.Linq.Extensions;
+using E_Ticketer.DataExporting;
 using E_Ticketer.Stations.Dtos;
 using E_Ticketer.Stations.Exporting;
 using Microsoft.EntityFrameworkCore;
 
 namespace E_Ticketer.Stations
 {
-	[AbpAuthorize(AppPermissions.Pages_Stations)]
     public class StationsAppService : E_TicketerAppServiceBase, IStationsAppService
     {
 		 private readonly IRepository<Station> _stationRepository;
@@ -65,8 +65,7 @@ namespace E_Ticketer.Stations
 			
             return output;
          }
-		 
-		 [AbpAuthorize(AppPermissions.Pages_Stations_Edit)]
+         
 		 public async Task<GetStationForEditOutput> GetStationForEdit(EntityDto input)
          {
             var station = await _stationRepository.FirstOrDefaultAsync(input.Id);
@@ -86,7 +85,6 @@ namespace E_Ticketer.Stations
 			}
          }
 
-		 [AbpAuthorize(AppPermissions.Pages_Stations_Create)]
 		 protected virtual async Task Create(CreateOrEditStationDto input)
          {
             var station = ObjectMapper.Map<Station>(input);
@@ -94,21 +92,19 @@ namespace E_Ticketer.Stations
 			
 			if (AbpSession.TenantId != null)
 			{
-				station.TenantId = (int?) AbpSession.TenantId;
+				station.TenantId = (int) AbpSession.TenantId;
 			}
 		
 
             await _stationRepository.InsertAsync(station);
          }
 
-		 [AbpAuthorize(AppPermissions.Pages_Stations_Edit)]
 		 protected virtual async Task Update(CreateOrEditStationDto input)
          {
             var station = await _stationRepository.FirstOrDefaultAsync((int)input.Id);
              ObjectMapper.Map(input, station);
          }
 
-		 [AbpAuthorize(AppPermissions.Pages_Stations_Delete)]
          public async Task Delete(EntityDto input)
          {
             await _stationRepository.DeleteAsync(input.Id);

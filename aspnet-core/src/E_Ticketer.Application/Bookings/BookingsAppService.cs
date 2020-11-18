@@ -1,23 +1,25 @@
-﻿using System.Linq.Dynamic.Core;
+﻿using System;
+using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
+using System.Linq;
 using Abp.Application.Services.Dto;
 using Abp.Authorization;
 using Abp.Domain.Repositories;
 using Abp.Linq.Extensions;
 using E_Ticketer.Bookings.Dtos;
 using E_Ticketer.Bookings.Exporting;
+using E_Ticketer.DataExporting;
 using Microsoft.EntityFrameworkCore;
 
 namespace E_Ticketer.Bookings
 {
-	[AbpAuthorize(AppPermissions.Pages_Bookings)]
     public class BookingsAppService : E_TicketerAppServiceBase, IBookingsAppService
     {
-		 private readonly IRepository<Booking> _bookingRepository;
+		 private readonly IRepository<Booking,Guid> _bookingRepository;
 		 private readonly IBookingsExcelExporter _bookingsExcelExporter;
 		 
 
-		  public BookingsAppService(IRepository<Booking> bookingRepository, IBookingsExcelExporter bookingsExcelExporter ) 
+		  public BookingsAppService(IRepository<Booking, Guid> bookingRepository, IBookingsExcelExporter bookingsExcelExporter ) 
 		  {
 			_bookingRepository = bookingRepository;
 			_bookingsExcelExporter = bookingsExcelExporter;
@@ -35,8 +37,8 @@ namespace E_Ticketer.Bookings
 						.WhereIf(input.MaxTicketTypeFilter != null, e => e.TicketType <= input.MaxTicketTypeFilter)
 						.WhereIf(input.MinTicketPriceFilter != null, e => e.TicketPrice >= input.MinTicketPriceFilter)
 						.WhereIf(input.MaxTicketPriceFilter != null, e => e.TicketPrice <= input.MaxTicketPriceFilter)
-						.WhereIf(input.MinstatusFilter != null, e => e.status >= input.MinstatusFilter)
-						.WhereIf(input.MaxstatusFilter != null, e => e.status <= input.MaxstatusFilter)
+						.WhereIf(input.MinstatusFilter != null, e => e.Status >= input.MinstatusFilter)
+						.WhereIf(input.MaxstatusFilter != null, e => e.Status <= input.MaxstatusFilter)
 						.WhereIf(!string.IsNullOrWhiteSpace(input.FirstNameFilter),  e => e.FirstName == input.FirstNameFilter)
 						.WhereIf(!string.IsNullOrWhiteSpace(input.LastNameFilter),  e => e.LastName == input.LastNameFilter)
 						.WhereIf(!string.IsNullOrWhiteSpace(input.PhoneNumberFilter),  e => e.PhoneNumber == input.PhoneNumberFilter)
@@ -53,7 +55,7 @@ namespace E_Ticketer.Bookings
                                 BookingType = o.BookingType,
                                 TicketType = o.TicketType,
                                 TicketPrice = o.TicketPrice,
-                                status = o.status,
+                                status = o.Status,
                                 FirstName = o.FirstName,
                                 LastName = o.LastName,
                                 PhoneNumber = o.PhoneNumber,
@@ -70,7 +72,7 @@ namespace E_Ticketer.Bookings
             );
          }
 		 
-		 public async Task<GetBookingForViewDto> GetBookingForView(int id)
+		 public async Task<GetBookingForViewDto> GetBookingForView(Guid id)
          {
             var booking = await _bookingRepository.GetAsync(id);
 
@@ -78,9 +80,8 @@ namespace E_Ticketer.Bookings
 			
             return output;
          }
-		 
-		 [AbpAuthorize(AppPermissions.Pages_Bookings_Edit)]
-		 public async Task<GetBookingForEditOutput> GetBookingForEdit(EntityDto input)
+         
+		 public async Task<GetBookingForEditOutput> GetBookingForEdit(EntityDto<Guid> input)
          {
             var booking = await _bookingRepository.FirstOrDefaultAsync(input.Id);
            
@@ -99,7 +100,6 @@ namespace E_Ticketer.Bookings
 			}
          }
 
-		 [AbpAuthorize(AppPermissions.Pages_Bookings_Create)]
 		 protected virtual async Task Create(CreateOrEditBookingDto input)
          {
             var booking = ObjectMapper.Map<Booking>(input);
@@ -107,22 +107,19 @@ namespace E_Ticketer.Bookings
 			
 			if (AbpSession.TenantId != null)
 			{
-				booking.TenantId = (int?) AbpSession.TenantId;
+				booking.TenantId = (int) AbpSession.TenantId;
 			}
 		
 
             await _bookingRepository.InsertAsync(booking);
          }
 
-		 [AbpAuthorize(AppPermissions.Pages_Bookings_Edit)]
 		 protected virtual async Task Update(CreateOrEditBookingDto input)
          {
-            var booking = await _bookingRepository.FirstOrDefaultAsync((int)input.Id);
+            var booking = await _bookingRepository.FirstOrDefaultAsync((Guid)input.Id);
              ObjectMapper.Map(input, booking);
          }
-
-		 [AbpAuthorize(AppPermissions.Pages_Bookings_Delete)]
-         public async Task Delete(EntityDto input)
+         public async Task Delete(EntityDto<Guid> input)
          {
             await _bookingRepository.DeleteAsync(input.Id);
          } 
@@ -138,8 +135,8 @@ namespace E_Ticketer.Bookings
 						.WhereIf(input.MaxTicketTypeFilter != null, e => e.TicketType <= input.MaxTicketTypeFilter)
 						.WhereIf(input.MinTicketPriceFilter != null, e => e.TicketPrice >= input.MinTicketPriceFilter)
 						.WhereIf(input.MaxTicketPriceFilter != null, e => e.TicketPrice <= input.MaxTicketPriceFilter)
-						.WhereIf(input.MinstatusFilter != null, e => e.status >= input.MinstatusFilter)
-						.WhereIf(input.MaxstatusFilter != null, e => e.status <= input.MaxstatusFilter)
+						.WhereIf(input.MinstatusFilter != null, e => e.Status >= input.MinstatusFilter)
+						.WhereIf(input.MaxstatusFilter != null, e => e.Status <= input.MaxstatusFilter)
 						.WhereIf(!string.IsNullOrWhiteSpace(input.FirstNameFilter),  e => e.FirstName == input.FirstNameFilter)
 						.WhereIf(!string.IsNullOrWhiteSpace(input.LastNameFilter),  e => e.LastName == input.LastNameFilter)
 						.WhereIf(!string.IsNullOrWhiteSpace(input.PhoneNumberFilter),  e => e.PhoneNumber == input.PhoneNumberFilter)
@@ -152,7 +149,7 @@ namespace E_Ticketer.Bookings
                                 BookingType = o.BookingType,
                                 TicketType = o.TicketType,
                                 TicketPrice = o.TicketPrice,
-                                status = o.status,
+                                status = o.Status,
                                 FirstName = o.FirstName,
                                 LastName = o.LastName,
                                 PhoneNumber = o.PhoneNumber,

@@ -6,7 +6,7 @@ using Abp.Domain.Entities.Auditing;
 namespace E_Ticketer.Stations
 {
     [Table("AppTrains")]
-    public class Train:FullAuditedEntity<Guid>, IMustHaveTenant
+    public class Train:FullAuditedEntity, IMustHaveTenant
     {
         public Train()
         {

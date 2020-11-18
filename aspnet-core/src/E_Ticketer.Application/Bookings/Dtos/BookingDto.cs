@@ -1,9 +1,10 @@
-﻿using Abp.Application.Services.Dto;
+﻿using System;
+using Abp.Application.Services.Dto;
 
 namespace E_Ticketer.Bookings.Dtos
 {
-    public class BookingDto : EntityDto
-    {
+    public class BookingDto : EntityDto<Guid>
+	{
 		public int BookingType { get; set; }
 
 		public int TicketType { get; set; }

@@ -1,17 +1,18 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
 using Abp.Application.Services.Dto;
 using Abp.Authorization;
 using Abp.Domain.Repositories;
 using Abp.Linq.Extensions;
+using E_Ticketer.DataExporting;
 using E_Ticketer.Stations.Dtos;
 using E_Ticketer.Stations.Exporting;
 using Microsoft.EntityFrameworkCore;
 
 namespace E_Ticketer.Stations
 {
-	[AbpAuthorize(AppPermissions.Pages_Trips)]
     public class TripsAppService : E_TicketerAppServiceBase, ITripsAppService
     {
 		 private readonly IRepository<Trip> _tripRepository;
@@ -31,7 +32,7 @@ namespace E_Ticketer.Stations
          {
 			
 			var filteredTrips = _tripRepository.GetAll()
-						.Include( e => e.TrainFk)
+						.Include( e => e.Train)
 						.WhereIf(!string.IsNullOrWhiteSpace(input.Filter), e => false )
 						.WhereIf(input.MinOriginStationIdFilter != null, e => e.OriginStationId >= input.MinOriginStationIdFilter)
 						.WhereIf(input.MaxOriginStationIdFilter != null, e => e.OriginStationId <= input.MaxOriginStationIdFilter)
@@ -47,7 +48,7 @@ namespace E_Ticketer.Stations
 						.WhereIf(input.MaxMaxOtherTicketsFilter != null, e => e.MaxOtherTickets <= input.MaxMaxOtherTicketsFilter)
 						.WhereIf(input.MinStatusFilter != null, e => e.Status >= input.MinStatusFilter)
 						.WhereIf(input.MaxStatusFilter != null, e => e.Status <= input.MaxStatusFilter)
-						.WhereIf(!string.IsNullOrWhiteSpace(input.TrainIdentifierFilter), e => e.TrainFk != null && e.TrainFk.Identifier == input.TrainIdentifierFilter);
+						.WhereIf(!string.IsNullOrWhiteSpace(input.TrainIdentifierFilter), e => e.Train != null && e.Train.Identifier == input.TrainIdentifierFilter);
 
 			var pagedAndFilteredTrips = filteredTrips
                 .OrderBy(input.Sorting ?? "id asc")
@@ -94,8 +95,7 @@ namespace E_Ticketer.Stations
 			
             return output;
          }
-		 
-		 [AbpAuthorize(AppPermissions.Pages_Trips_Edit)]
+         
 		 public async Task<GetTripForEditOutput> GetTripForEdit(EntityDto input)
          {
             var trip = await _tripRepository.FirstOrDefaultAsync(input.Id);
@@ -121,7 +121,6 @@ namespace E_Ticketer.Stations
 			}
          }
 
-		 [AbpAuthorize(AppPermissions.Pages_Trips_Create)]
 		 protected virtual async Task Create(CreateOrEditTripDto input)
          {
             var trip = ObjectMapper.Map<Trip>(input);
@@ -129,21 +128,19 @@ namespace E_Ticketer.Stations
 			
 			if (AbpSession.TenantId != null)
 			{
-				trip.TenantId = (int?) AbpSession.TenantId;
+				trip.TenantId = (int) AbpSession.TenantId;
 			}
 		
 
             await _tripRepository.InsertAsync(trip);
          }
-
-		 [AbpAuthorize(AppPermissions.Pages_Trips_Edit)]
+         
 		 protected virtual async Task Update(CreateOrEditTripDto input)
          {
             var trip = await _tripRepository.FirstOrDefaultAsync((int)input.Id);
              ObjectMapper.Map(input, trip);
          }
 
-		 [AbpAuthorize(AppPermissions.Pages_Trips_Delete)]
          public async Task Delete(EntityDto input)
          {
             await _tripRepository.DeleteAsync(input.Id);
@@ -153,7 +150,7 @@ namespace E_Ticketer.Stations
          {
 			
 			var filteredTrips = _tripRepository.GetAll()
-						.Include( e => e.TrainFk)
+						.Include( e => e.Train)
 						.WhereIf(!string.IsNullOrWhiteSpace(input.Filter), e => false )
 						.WhereIf(input.MinOriginStationIdFilter != null, e => e.OriginStationId >= input.MinOriginStationIdFilter)
 						.WhereIf(input.MaxOriginStationIdFilter != null, e => e.OriginStationId <= input.MaxOriginStationIdFilter)
@@ -169,7 +166,7 @@ namespace E_Ticketer.Stations
 						.WhereIf(input.MaxMaxOtherTicketsFilter != null, e => e.MaxOtherTickets <= input.MaxMaxOtherTicketsFilter)
 						.WhereIf(input.MinStatusFilter != null, e => e.Status >= input.MinStatusFilter)
 						.WhereIf(input.MaxStatusFilter != null, e => e.Status <= input.MaxStatusFilter)
-						.WhereIf(!string.IsNullOrWhiteSpace(input.TrainIdentifierFilter), e => e.TrainFk != null && e.TrainFk.Identifier == input.TrainIdentifierFilter);
+						.WhereIf(!string.IsNullOrWhiteSpace(input.TrainIdentifierFilter), e => e.Train != null && e.Train.Identifier == input.TrainIdentifierFilter);
 
 			var query = (from o in filteredTrips
                          join o1 in _lookup_trainRepository.GetAll() on o.TrainId equals o1.Id into j1
@@ -197,8 +194,6 @@ namespace E_Ticketer.Stations
          }
 
 
-
-		[AbpAuthorize(AppPermissions.Pages_Trips)]
          public async Task<PagedResultDto<TripTrainLookupTableDto>> GetAllTrainForLookupTable(GetAllForLookupTableInput input)
          {
              var query = _lookup_trainRepository.GetAll().WhereIf(
