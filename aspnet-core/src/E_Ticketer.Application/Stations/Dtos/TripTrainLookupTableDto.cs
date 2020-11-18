@@ -1,8 +1,10 @@
-﻿namespace E_Ticketer.Stations.Dtos
+﻿using System;
+
+namespace E_Ticketer.Stations.Dtos
 {
     public class TripTrainLookupTableDto
     {
-		public int Id { get; set; }
+		public Guid Id { get; set; }
 
 		public string DisplayName { get; set; }
     }

@@ -39,7 +39,7 @@ namespace E_Ticketer.Stations
         public int Status { get; set; }
 
         [Required]
-        public int TrainId { get; set; }
+        public Guid TrainId { get; set; }
 
         public Train Train { get; set; }
 

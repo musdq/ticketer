@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
@@ -17,10 +18,10 @@ namespace E_Ticketer.Stations
     {
 		 private readonly IRepository<Trip> _tripRepository;
 		 private readonly ITripsExcelExporter _tripsExcelExporter;
-		 private readonly IRepository<Train,int> _lookup_trainRepository;
+		 private readonly IRepository<Train,Guid> _lookup_trainRepository;
 		 
 
-		  public TripsAppService(IRepository<Trip> tripRepository, ITripsExcelExporter tripsExcelExporter , IRepository<Train, int> lookup_trainRepository) 
+		  public TripsAppService(IRepository<Trip> tripRepository, ITripsExcelExporter tripsExcelExporter , IRepository<Train, Guid> lookup_trainRepository) 
 		  {
 			_tripRepository = tripRepository;
 			_tripsExcelExporter = tripsExcelExporter;
@@ -89,7 +90,7 @@ namespace E_Ticketer.Stations
 
 		    if (output.Trip.TrainId != null)
             {
-                var _lookupTrain = await _lookup_trainRepository.FirstOrDefaultAsync((int)output.Trip.TrainId);
+                var _lookupTrain = await _lookup_trainRepository.FirstOrDefaultAsync((Guid)output.Trip.TrainId);
                 output.TrainIdentifier = _lookupTrain?.Identifier?.ToString();
             }
 			
@@ -104,7 +105,7 @@ namespace E_Ticketer.Stations
 
 		    if (output.Trip.TrainId != null)
             {
-                var _lookupTrain = await _lookup_trainRepository.FirstOrDefaultAsync((int)output.Trip.TrainId);
+                var _lookupTrain = await _lookup_trainRepository.FirstOrDefaultAsync((Guid)output.Trip.TrainId);
                 output.TrainIdentifier = _lookupTrain?.Identifier?.ToString();
             }
 			

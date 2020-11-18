@@ -20,7 +20,7 @@ namespace E_Ticketer.Stations.Dtos
 		public int Status { get; set; }
 
 
-		 public int? TrainId { get; set; }
+		 public Guid? TrainId { get; set; }
 
 		 
     }
